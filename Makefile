@@ -11,29 +11,46 @@ ifeq ($(@which terraform),"")
 $(error $(M) Terraform not available)
 endif
 
-.PHONY: init
-init: ## Init the terraform project
+### SIMPLE
+.PHONY: simple_init
+simple_init: ## Init the terraform project
 	$(info $(M) Terraform init)
-	terraform init
+	cd simple && terraform init
 
-.PHONY: plan
-plan: ## Plan the terraform project
+.PHONY: simple_plan
+simple_plan: ## Plan the terraform project
 	$(info $(M) Terraform plan)
-	terraform plan
+	cd simple && terraform plan
 
-.PHONY: destroy
-destroy: ## Destroy all terraform created objects
+.PHONY: simple_destroy
+simple_destroy: ## Destroy all terraform created objects
 	$(info $(M) Terraform destroy)
-	terraform destroy
+	cd simple && terraform destroy
 
-.PHONY: simple
-simple: ## Apply a simple cognito user_pool
+.PHONY: simple_apply
+simple_apply: ## Apply only a cognito user_pool
 	$(info $(M) Creating user pool : kisio_test_terraform)
-	terraform apply -target="aws_cognito_user_pool.pool1"
+	cd simple && terraform apply
 
-.PHONY: simple_bis
-simple_bis: ## Apply a simple cognito user_pool
+### CLIENT
+.PHONY: client_init
+client_init: ## Init the terraform project
+	$(info $(M) Terraform init)
+	cd simple && terraform init
+
+.PHONY: client_plan
+client_plan: ## Plan the terraform project
+	$(info $(M) Terraform plan)
+	cd simple && terraform plan
+
+.PHONY: client_destroy
+client_destroy: ## Destroy all terraform created objects
+	$(info $(M) Terraform destroy)
+	cd simple && terraform destroy
+
+.PHONY: client_apply
+client_apply: ## Apply a cognito user_pool with a client
 	$(info $(M) Creating user pool : kisio_test_terraform)
-	terraform apply -target="aws_cognito_user_pool.pool2"
+	cd simple && terraform apply
 
 .DEFAULT_GOAL := help
