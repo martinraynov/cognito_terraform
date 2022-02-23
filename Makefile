@@ -1,4 +1,5 @@
 M = $(shell printf "\033[34;1m▶\033[0m")
+PROJECTS := "simple|client"
 
 .PHONY: help
 help: ## Prints this help message
@@ -11,54 +12,46 @@ ifeq ($(@which terraform),"")
 $(error $(M) Terraform not available)
 endif
 
-### GLOBAL
+.PHONY: checkvars
+checkvars: 
+ifndef COGNITO_PROJECT
+	$(error $(M) COGNITO_PROJECT isn't defined)
+else ifneq ($(findstring $(COGNITO_PROJECT),$(PROJECTS)),$(COGNITO_PROJECT))
+	$(error $(M) COGNITO_PROJECT isn't one of the available ones ($(PROJECTS)))
+endif
+
 .PHONY: clean
-clean: ## Init the terraform project
+clean: ## Clean the terraform project
 	$(info $(M) Clean project)
-	find -name ".terraform.lock.hcl" -delete
-	find -type d -name ".terraform" -exec rm -r "{}" \;
+	@find -name ".terraform.lock.hcl" -delete
+	@find -type d -name ".terraform" -exec rm -r "{}" \;
 
+.PHONY: init
+init: ## Init the terraform project
+	@$(MAKE) checkvars
 
-### SIMPLE
-.PHONY: simple_init
-simple_init: ## Init the terraform project
-	$(info $(M) Terraform init)
-	cd simple && terraform init
+	$(info $(M) Terraform init : $(COGNITO_PROJECT))
+	cd $(COGNITO_PROJECT) && terraform init
 
-.PHONY: simple_plan
-simple_plan: ## Plan the terraform project
-	$(info $(M) Terraform plan)
-	cd simple && terraform plan
+.PHONY: plan
+plan: ## Plan the terraform simple project
+	@$(MAKE) checkvars
 
-.PHONY: simple_destroy
-simple_destroy: ## Destroy all terraform created objects
-	$(info $(M) Terraform destroy)
-	cd simple && terraform destroy
+	$(info $(M) Terraform plan : $(COGNITO_PROJECT))
+	cd $(COGNITO_PROJECT) && terraform plan
+
+.PHONY: destroy
+destroy: ## Destroy all terraform created objects
+	@$(MAKE) checkvars
+
+	$(info $(M) Terraform destroy : $(COGNITO_PROJECT))
+	cd $(COGNITO_PROJECT) && terraform destroy
 
 .PHONY: simple_apply
 simple_apply: ## Apply only a cognito user_pool
-	$(info $(M) Creating user pool : kisio_test_terraform)
-	cd simple && terraform apply
+	@$(MAKE) checkvars
 
-### CLIENT
-.PHONY: client_init
-client_init: ## Init the terraform project
-	$(info $(M) Terraform init)
-	cd client && terraform init
-
-.PHONY: client_plan
-client_plan: ## Plan the terraform project
-	$(info $(M) Terraform plan)
-	cd client && terraform plan
-
-.PHONY: client_destroy
-client_destroy: ## Destroy all terraform created objects
-	$(info $(M) Terraform destroy)
-	cd client && terraform destroy
-
-.PHONY: client_apply
-client_apply: ## Apply a cognito user_pool with a client
-	$(info $(M) Creating user pool : kisio_test_terraform)
-	cd client && terraform apply
+	$(info $(M) Creating cloud objects from folder : $(COGNITO_PROJECT))
+	cd $(COGNITO_PROJECT) && terraform apply
 
 .DEFAULT_GOAL := help
