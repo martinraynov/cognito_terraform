@@ -1,1 +1,1 @@
-../provider.tf
+../ref/provider.tf
