@@ -11,6 +11,14 @@ ifeq ($(@which terraform),"")
 $(error $(M) Terraform not available)
 endif
 
+### GLOBAL
+.PHONY: clean
+clean: ## Init the terraform project
+	$(info $(M) Clean project)
+	find -name ".terraform.lock.hcl" -delete
+	find -type d -name ".terraform" -exec rm -r "{}" \;
+
+
 ### SIMPLE
 .PHONY: simple_init
 simple_init: ## Init the terraform project
@@ -36,21 +44,21 @@ simple_apply: ## Apply only a cognito user_pool
 .PHONY: client_init
 client_init: ## Init the terraform project
 	$(info $(M) Terraform init)
-	cd simple && terraform init
+	cd client && terraform init
 
 .PHONY: client_plan
 client_plan: ## Plan the terraform project
 	$(info $(M) Terraform plan)
-	cd simple && terraform plan
+	cd client && terraform plan
 
 .PHONY: client_destroy
 client_destroy: ## Destroy all terraform created objects
 	$(info $(M) Terraform destroy)
-	cd simple && terraform destroy
+	cd client && terraform destroy
 
 .PHONY: client_apply
 client_apply: ## Apply a cognito user_pool with a client
 	$(info $(M) Creating user pool : kisio_test_terraform)
-	cd simple && terraform apply
+	cd client && terraform apply
 
 .DEFAULT_GOAL := help
