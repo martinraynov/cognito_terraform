@@ -1,5 +1,4 @@
 M = $(shell printf "\033[34;1m▶\033[0m")
-PROJECTS := "simple|client"
 
 .PHONY: help
 help: ## Prints this help message
@@ -12,12 +11,22 @@ ifeq ($(@which terraform),"")
 $(error $(M) Terraform not available)
 endif
 
+.PHONY: createsymlinks
+createsymlinks: ## Create symlinks of the ref folder inside new folder
+ifndef SYMLINKS_FOLDER
+	$(error $(M) SYMLINKS_FOLDER isn't defined)
+else ifeq ($(wildcard ${SYMLINKS_FOLDER}),)
+	$(error $(M) SYMLINKS_FOLDER doesn't exist)
+endif
+	$(info $(M) Symlinks into ${SYMLINKS_FOLDER})
+	cd ${SYMLINKS_FOLDER} && find -maxdepth 1 -type l -delete && ln -s ../ref/variables.tf variables.tf && ln -s ../ref/version.tf version.tf && ln -s ../ref/provider.tf provider.tf && ln -s ../ref/terraform.tfvars terraform.tfvars
+
 .PHONY: checkvars
 checkvars: 
 ifndef COGNITO_PROJECT
 	$(error $(M) COGNITO_PROJECT isn't defined)
-else ifneq ($(findstring $(COGNITO_PROJECT),$(PROJECTS)),$(COGNITO_PROJECT))
-	$(error $(M) COGNITO_PROJECT isn't one of the available ones ($(PROJECTS)))
+else ifeq ($(wildcard ${COGNITO_PROJECT}),)
+	$(error $(M) COGNITO_PROJECT isn't one of the available folders)
 endif
 
 .PHONY: clean
