@@ -56,8 +56,8 @@ destroy: ## Destroy all terraform created objects
 	$(info $(M) Terraform destroy : $(COGNITO_PROJECT))
 	cd $(COGNITO_PROJECT) && terraform destroy
 
-.PHONY: simple_apply
-simple_apply: ## Apply only a cognito user_pool
+.PHONY: apply
+apply: ## Apply only a cognito user_pool
 	@$(MAKE) checkvars
 
 	$(info $(M) Creating cloud objects from folder : $(COGNITO_PROJECT))
