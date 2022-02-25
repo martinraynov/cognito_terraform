@@ -49,6 +49,13 @@ plan: ## Plan the terraform simple project
 	$(info $(M) Terraform plan : $(COGNITO_PROJECT))
 	cd $(COGNITO_PROJECT) && terraform plan
 
+.PHONY: apply
+apply: ## Apply only a cognito user_pool
+	@$(MAKE) checkvars
+
+	$(info $(M) Creating cloud objects from folder : $(COGNITO_PROJECT))
+	cd $(COGNITO_PROJECT) && terraform apply
+
 .PHONY: destroy
 destroy: ## Destroy all terraform created objects
 	@$(MAKE) checkvars
@@ -56,11 +63,5 @@ destroy: ## Destroy all terraform created objects
 	$(info $(M) Terraform destroy : $(COGNITO_PROJECT))
 	cd $(COGNITO_PROJECT) && terraform destroy
 
-.PHONY: apply
-apply: ## Apply only a cognito user_pool
-	@$(MAKE) checkvars
-
-	$(info $(M) Creating cloud objects from folder : $(COGNITO_PROJECT))
-	cd $(COGNITO_PROJECT) && terraform apply
 
 .DEFAULT_GOAL := help
