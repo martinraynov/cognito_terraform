@@ -1,5 +1,5 @@
 resource "aws_cognito_user_pool" "client" {
-  name = "test_terraform_client"
+  name = "test-terraform-client"
 }
 
 resource "aws_cognito_user_pool_client" "application1" {
