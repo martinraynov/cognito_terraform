@@ -33,6 +33,9 @@ endif
 clean: ## Clean the terraform project
 	$(info $(M) Clean project)
 	@find -name ".terraform.lock.hcl" -delete
+	@find -name "terraform.tfstate" -delete
+	@find -name "terraform.tfstate.backup" -delete
+	@find -name "*.plan" -delete
 	@find -type d -name ".terraform" -exec rm -r "{}" \;
 
 .PHONY: init
@@ -47,14 +50,14 @@ plan: ## Plan the terraform simple project
 	@$(MAKE) checkvars
 
 	$(info $(M) Terraform plan : $(COGNITO_PROJECT))
-	cd $(COGNITO_PROJECT) && terraform plan
+	cd $(COGNITO_PROJECT) && terraform plan -out=$(COGNITO_PROJECT).plan
 
 .PHONY: apply
 apply: ## Apply only a cognito user_pool
 	@$(MAKE) checkvars
 
 	$(info $(M) Creating cloud objects from folder : $(COGNITO_PROJECT))
-	cd $(COGNITO_PROJECT) && terraform apply
+	cd $(COGNITO_PROJECT) && terraform apply $(COGNITO_PROJECT).plan
 
 .PHONY: destroy
 destroy: ## Destroy all terraform created objects
